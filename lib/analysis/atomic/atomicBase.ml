@@ -26,8 +26,9 @@ let compute_precondition (command: 'a HeapAtomicCommand.t) (post_condition: Norm
       conjunction_of_normalized_formulas formula post_condition
     | Allocation(id) ->
       let new_name, fresh_post_condition = generate_fresh_existentialized_variable post_condition in
-      let disjoints = apply_alloc_v2 id new_name fresh_post_condition.variables fresh_post_condition.disjoints in
-      make (fresh_post_condition.variables) disjoints (fresh_post_condition.id_generator)
+      let new_name2, fresh_post_condition2 = generate_fresh_existentialized_variable fresh_post_condition in
+      let disjoints = apply_alloc_v2 id new_name new_name2 fresh_post_condition2.variables fresh_post_condition2.disjoints in
+      make (fresh_post_condition2.variables) disjoints (fresh_post_condition2.id_generator)
     | Free(id) ->
       let new_name, fresh_post_condition = generate_fresh_existentialized_variable post_condition in
       let disjoints = apply_free_v2 id new_name post_condition.disjoints in

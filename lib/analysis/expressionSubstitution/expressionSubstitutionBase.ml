@@ -26,6 +26,12 @@ let substitute_expression_in_normalized_formula (formula: NormalForm.t) (changin
   let variables = if renamed_used then IdentifierSet.add renamed_var formula.variables else formula.variables in
   NormalForm.make variables disjoints id_generator
 
+(** [substitute_identifier_in_formula formula new_id id] substitutes every occurrence of
+the identifier [id] with the identifier [new_id] in every expression in the normalized [formula].
+*)
+let substitute_identifier_in_formula (formula: Formula.t) (changing_id: identifier) (changed_id: identifier) =
+  substitute_identifier_in_formula formula changing_id changed_id
+
 (** [substitute_expression_in_formula formula expr id fresh_id] substitutes every occurrence of
 the identifier [id] with the expression [expr] in every expression in the normalized [formula].
 It uses the [fresh_id] identifier only if aliases are needed.

@@ -6,6 +6,48 @@ let get_variable_from_normal_form_expr (expr: ArithmeticExpression.t) =
   | Variable(id) -> Some(id)
   | _ -> None
 
+let rec substitute_expression_in_expression (expr: ArithmeticExpression.t) (changing_expr: ArithmeticExpression.t) (changed_id: identifier) =
+  match expr with
+  | Literal(_) -> expr
+  | Variable(id) ->
+    if id = changed_id then
+      changing_expr
+    else
+      expr
+  | Operation(op, lexpr, rexpr) ->
+    let lexpr = substitute_expression_in_expression lexpr changing_expr changed_id in
+    let rexpr = substitute_expression_in_expression rexpr changing_expr changed_id in
+    ArithmeticExpression.Operation(op, lexpr, rexpr)
+
+let rec substitute_identifier_in_formula (formula: Formula.t) (changing_id: identifier) (changed_id: identifier) =
+  let changing_id_expr = ArithmeticExpression.Variable(changing_id) in
+  match formula with
+  | True | False | EmptyHeap ->
+    formula
+  | Allocation(id, expr) ->
+    let expr = substitute_expression_in_expression expr changing_id_expr changed_id in
+    if id = changed_id then
+      Formula.Allocation(changing_id, expr)
+    else
+      Formula.Allocation(id, expr)
+  | NonAllocated(id) ->
+    if id = changed_id then
+      Formula.NonAllocated(changing_id)
+    else
+      formula
+  | Comparison(op, lexpr, rexpr) ->
+    let lexpr = substitute_expression_in_expression lexpr changing_id_expr changed_id in
+    let rexpr = substitute_expression_in_expression rexpr changing_id_expr changed_id in
+    Formula.Comparison(op, lexpr, rexpr)
+  | And(lformula, rformula) ->
+    let lformula = substitute_identifier_in_formula lformula changing_id changed_id in
+    let rformula = substitute_identifier_in_formula rformula changing_id changed_id in
+    Formula.And(lformula, rformula)
+  | AndSeparately(lformula, rformula) ->
+    let lformula = substitute_identifier_in_formula lformula changing_id changed_id in
+    let rformula = substitute_identifier_in_formula rformula changing_id changed_id in
+    Formula.AndSeparately(lformula, rformula)
+
 let rec substitute_expression_in_formula (formula: Formula.t) (changing_expr: ArithmeticExpression.t) (changed_id: identifier) (renamed_id: identifier) =
   match formula with
   | True | False | EmptyHeap ->
@@ -37,15 +79,3 @@ let rec substitute_expression_in_formula (formula: Formula.t) (changing_expr: Ar
     let lformula, lrenamed = substitute_expression_in_formula lformula changing_expr changed_id renamed_id in
     let rformula, rrenamed = substitute_expression_in_formula rformula changing_expr changed_id renamed_id in
     Formula.AndSeparately(lformula, rformula), lrenamed || rrenamed
-and substitute_expression_in_expression (expr: ArithmeticExpression.t) (changing_expr: ArithmeticExpression.t) (changed_id: identifier) =
-  match expr with
-  | Literal(_) -> expr
-  | Variable(id) ->
-    if id = changed_id then
-      changing_expr
-    else
-      expr
-  | Operation(op, lexpr, rexpr) ->
-    let lexpr = substitute_expression_in_expression lexpr changing_expr changed_id in
-    let rexpr = substitute_expression_in_expression rexpr changing_expr changed_id in
-    ArithmeticExpression.Operation(op, lexpr, rexpr)

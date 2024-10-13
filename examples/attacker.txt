@@ -1,0 +1,8 @@
+x = alloc();
+free(x);
+
+y = alloc();
+[y] = secret;
+
+leak = [x];
+skip << leak = secret >>
