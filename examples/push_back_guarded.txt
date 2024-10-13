@@ -1,0 +1,14 @@
+x = [v];
+if (len >= cap) then {
+    y = [v];
+    free(y);
+    y = alloc();
+    [v] = y;
+    len = len + 1;
+    cap = cap * 2
+}
+else {
+    len = len + 1
+};
+(len > 8)?;
+skip << (x -/>) * true >>

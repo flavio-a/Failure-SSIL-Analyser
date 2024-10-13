@@ -36,3 +36,32 @@
     make: dune: No such file or directory
     ```
     solution: `eval $(opam env)`
+
+## Running in Docker
+To build the image:
+```
+docker build -t ssil-failure .
+```
+
+To create the container the first time
+```
+docker run -it --name ssil -v $(pwd):/home/opam/Failure ssil-failure bash
+```
+
+To run it afterwards
+```
+docker start ssil
+docker exec -it ssil bash
+```
+
+From inside the container, to run examples:
+```
+cd ~/Failure
+opam exec -- dune exec lisproject <filename>
+```
+
+The examples in the paper can be found in the `~/Failure/examples` directory.
+For instance, to run Example 5.2, use
+```
+opam exec -- dune exec lisproject examples/push_back.txt
+```
