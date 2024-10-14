@@ -45,7 +45,7 @@ docker build -t ssil-failure .
 
 To create the container the first time
 ```
-docker run -it --name ssil -v $(pwd):/home/opam/Failure ssil-failure bash
+docker run -it --name ssil ssil-failure bash
 ```
 
 To run it afterwards
@@ -56,7 +56,6 @@ docker exec -it ssil bash
 
 From inside the container, to run examples:
 ```
-cd ~/Failure
 opam exec -- dune exec lisproject <filename>
 ```
 
